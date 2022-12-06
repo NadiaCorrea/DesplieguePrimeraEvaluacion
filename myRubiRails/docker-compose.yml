@@ -1,0 +1,35 @@
+#Número de version de Docker Compose
+version: '2'
+
+#Servicios que lo componen. Los diferentes contendores que seran creados
+services:
+  mariadb:
+    #ubicación de la imagen mariadb a obtener
+    image: docker.io/bitnami/mariadb:10.6
+
+    #variables de entorno necesarias para arrancar el contendor
+    environment:
+      # ALLOW_EMPTY_PASSWORD is recommended only for development.
+      - ALLOW_EMPTY_PASSWORD=yes
+
+  myapp:
+    #ubicación de la imagen rails a obtener
+    image: docker.io/bitnami/rails:7
+
+    #mapeo de puertos host:contenedor
+    ports:
+      - '8001:3000'
+
+    #variables de entorno necesarias para arrancar el contendor
+    environment:
+      - DATABASE_HOST=mariadb
+      - DATABASE_NAME=my_app_development
+    
+    #Asignación de volúmenes
+    volumes:
+      - './my-project:/app'
+
+    #Dependencia - Para indicar el orden en el se han de arrancar los contenedores. El contendor de Rils depende 
+    #del de mariadb
+    depends_on:
+      - mariadb
