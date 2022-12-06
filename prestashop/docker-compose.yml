@@ -1,0 +1,49 @@
+#Número de version de Docker Compose
+version: '2'
+
+#Servicios que lo componen. mariadb y prestashop 
+services:
+  mariadb:
+
+    #ubicación de la imagen mariadb a obtener
+    image: docker.io/bitnami/mariadb:10.6
+    #variables de entorno necesarias para arrancar el contendor, en nuestro caso hemos tenido que cambiar el usuario, password y el nombre de la base de datos
+    environment:
+      # ALLOW_EMPTY_PASSWORD is recommended only for development.
+      - ALLOW_EMPTY_PASSWORD=yes
+      - MARIADB_USER=pepe
+      - MARIADB_PASSWORD=pepe 
+      - MARIADB_DATABASE=mitienda
+    #Asignación de volúmenes
+    volumes:
+      - 'mariadb_data:/bitnami/mariadb'
+
+  prestashop:
+    #ubicación de la imagen prestashop a obtener
+    image: docker.io/bitnami/prestashop:8
+    #mapeo de puertos host:contenedor
+    ports:
+      - '80:8080'
+      - '443:8443'
+    
+    #variables de entorno necesarias para arrancar el contendor, en nuestro caso hemos tenido que cambiar el usuario, password y el nombre de la base de datos
+    environment:
+      - PRESTASHOP_HOST=localhost
+      - PRESTASHOP_DATABASE_HOST=mariadb
+      - PRESTASHOP_DATABASE_PORT_NUMBER=3306
+      - PRESTASHOP_DATABASE_USER=pepe
+      - PRESTASHOP_DATABASE_PASSWORD=pepe
+      - PRESTASHOP_DATABASE_NAME=mitienda
+      # ALLOW_EMPTY_PASSWORD is recommended only for development.
+      - ALLOW_EMPTY_PASSWORD=yes
+    #Asignación de volúmenes
+    volumes:
+      - 'prestashop_data:/bitnami/prestashop'
+    #Dependencia - Indica orden en el se han de arrancar los contenedores. El contendor de Prestashop depende del de mariadb
+    depends_on:
+      - mariadb
+volumes:
+  mariadb_data:
+    driver: local
+  prestashop_data:
+    driver: local
