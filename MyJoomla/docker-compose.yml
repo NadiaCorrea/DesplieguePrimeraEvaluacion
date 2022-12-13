@@ -1,25 +1,34 @@
+#Número de version de Docker Compose
 version: '3.1'
 
+#Servicios que lo componen. Los diferentes contendores que seran creados un para Joomla y otra para la base de datos joomlabd
 services:
   joomla:
+    #nombre de la imagen a descargar de docker hub
     image: joomla
     restart: always
     links:
-      - joomladb:mysql
+      - joomladb:mysql      
+    #mapeo de puertos host:contenedor
     ports:
       - 8080:80
+   #Asignación de volúmenes
     volumes:
       - "../:/var/www/html"
+    #variables de entorno necesarias para arrancar el contendor
     environment:
       JOOMLA_DB_HOST: joomladb
       JOOMLA_DB_PASSWORD: nadia
 
   joomladb:
+    #nombre de la imagen a descargar de docker hub
     image: mysql:5.6
     ports:
       - 3306
     restart: always
+    #Asignación de volúmenes
     volumes:
       - "./data:/var/lib/mysql"
+    #variable de entorno necesaria
     environment:
       MYSQL_ROOT_PASSWORD: nadia
